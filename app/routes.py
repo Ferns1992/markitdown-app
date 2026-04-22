@@ -11,7 +11,6 @@ main_bp = Blueprint('main', __name__)
 def allowed_file(filename):
     ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
     allowed = {'pdf', 'ppt', 'pptx', 'doc', 'docx', 'xls', 'xlsx',
-              'jpg', 'jpeg', 'png', 'gif', 'wav', 'mp3',
               'csv', 'json', 'xml', 'html', 'epub', 'zip',
               'txt', 'md', 'msg', 'rtf', 'url'}
     return ext in allowed

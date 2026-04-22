@@ -16,8 +16,6 @@
 - **📙 Word** - Transform Word documents (.docx, .doc)
 - **📘 PowerPoint** - Convert presentations (.pptx, .ppt)
 - **📗 Excel** - Extract data from spreadsheets (.xlsx, .xls)
-- **🖼️ Images** - Extract EXIF metadata
-- **🎵 Audio** - Extract audio metadata
 - **🌐 HTML** - Convert web pages
 - **📊 Data Formats** - CSV, JSON, XML
 - **📚 EPUB** - E-book conversion
