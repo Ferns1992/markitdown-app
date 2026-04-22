@@ -8,7 +8,7 @@
 
 > **A beautiful web application for converting various file formats to Markdown using Microsoft's MarkItDown library** ✨
 
-![MarkItDown Preview](assets/preview.png)
+![MarkItDown Preview](assets/upload-page.png)
 
 ## 🌟 Features
 
@@ -178,7 +178,7 @@ server {
 ## 🎨 UI Preview
 
 ### Login Page 🔐
-![Login Page](assets/login.png)
+![Login Page](assets/login-page.png)
 
 ### Upload Interface ⬆️
 ![Upload](assets/upload.png)
@@ -187,7 +187,7 @@ server {
 ![Result](assets/result.png)
 
 ### Admin Panel ⚙️
-![Admin](assets/admin.png)
+![Admin Panel](assets/admin-page.png)
 
 ## 🔧 API Endpoints
 
