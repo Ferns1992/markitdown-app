@@ -8,7 +8,7 @@
 
 > **A beautiful web application for converting various file formats to Markdown using Microsoft's MarkItDown library** ✨
 
-![MarkItDown Preview](assets/upload-page.png)
+![MarkItDown Upload Interface](assets/02-upload.png)
 
 ## 🌟 Features
 
@@ -26,12 +26,26 @@
 - **Conversion History** - Track all conversions
 - **Modern UI** - Dark theme with emojis 😎
 
+## 🎨 UI Preview
+
+### 🔐 Login Page
+![Login Page](assets/01-login.png)
+
+### ⬆️ Upload Interface
+![Upload Interface](assets/02-upload.png)
+
+### 📋 Conversion History
+![History](assets/03-history.png)
+
+### ⚙️ Admin Panel
+![Admin Panel](assets/04-admin.png)
+
 ## 🚀 Quick Start
 
 ### Docker (Recommended) 🐳
 
 ```bash
-# Clone or download the project
+# Clone the project
 git clone https://github.com/Ferns1992/markitdown-app.git
 cd markitdown-app
 
@@ -88,8 +102,7 @@ markitdown-app/
 │       ├── register.html # Register page
 │       ├── history.html  # History page
 │       └── admin.html   # Admin panel
-├── assets/
-│   └── preview.png       # Preview image
+├── assets/               # UI screenshots
 ├── Dockerfile          # Production Docker
 ├── Dockerfile.dev    # Development Docker
 ├── docker-compose.yml # Docker Compose
@@ -99,10 +112,6 @@ markitdown-app/
 ```
 
 ## 🐳 Docker Deployment
-
-### Prerequisites
-- Docker installed
-- Docker Compose (optional)
 
 ### Deploy Options
 
@@ -129,37 +138,12 @@ docker build -t markitdown:latest .
 docker run -d -p 5000:5000 --name markitdown markitdown:latest
 ```
 
-#### Option 3: Production with Gunicorn
-
-```bash
-# Build production image
-docker build -f Dockerfile.prod -t markitdown:prod .
-
-# Run with gunicorn
-docker run -d -p 5000:5000 --name markitdown markitdown:prod
-```
-
 ### Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `SECRET_KEY` | Flask secret key | Change in production |
 | `DATABASE_URL` | Database URL | `sqlite:///markitdown.db` |
-
-### Production Reverse Proxy (Nginx) 🌐
-
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
 
 ## 👥 User Management
 
@@ -174,20 +158,6 @@ server {
 2. Admin approves → Status: Approved ✅
 3. User can login and convert files 🎉
 ```
-
-## 🎨 UI Preview
-
-### Login Page 🔐
-![Login Page](assets/login-page.png)
-
-### Upload Interface ⬆️
-![Upload](assets/upload.png)
-
-### Conversion Result ✅
-![Result](assets/result.png)
-
-### Admin Panel ⚙️
-![Admin Panel](assets/admin-page.png)
 
 ## 🔧 API Endpoints
 
