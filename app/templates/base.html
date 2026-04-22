@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkItDown - Convert Files to Markdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        nav a {
+            color: #a0a0b0;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        nav a:hover { color: #00d9ff; }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .hero {
+            text-align: center;
+            padding: 4rem 0 2rem;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #00d9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            color: #888;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        .formats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .formats span {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            color: #00d9ff;
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .upload-area {
+            border: 2px dashed rgba(0, 217, 255, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            background: rgba(0, 217, 255, 0.02);
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.05);
+            transform: scale(1.01);
+        }
+        .upload-area input { display: none; }
+        .upload-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .upload-area p { color: #888; font-size: 1.1rem; }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            color: #0f0f23;
+            padding: 0.9rem 2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+        #result {
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            display: none;
+        }
+        #result h3 { color: #00d9ff; margin-bottom: 1rem; font-size: 1rem; }
+        #result pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        .flash {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        .flash.success { background: rgba(0, 255, 136, 0.2); border: 1px solid #00ff88; color: #00ff88; }
+        .flash.danger { background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444; color: #ff4444; }
+        .flash.warning { background: rgba(255, 200, 0, 0.2); border: 1px solid #ffc800; color: #ffc800; }
+        form { max-width: 400px; margin: 0 auto; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #888; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.05);
+        }
+        .auth-links { text-align: center; margin-top: 1.5rem; color: #666; }
+        .auth-links a { color: #00d9ff; }
+        .history-table { width: 100%; background: rgba(15,15,35,0.8); border-radius: 12px; overflow: hidden; }
+        .history-table th, .history-table td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .history-table th { background: rgba(0,217,255,0.1); color: #00d9ff; font-size: 0.8rem; text-transform: uppercase; }
+        .status-completed { color: #00ff88; }
+        .status-failed { color: #ff4444; }
+        .status-pending, .status-processing { color: #ffc800; }
+        .admin-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .admin-card {
+            background: rgba(15,15,35,0.8);
+            border: 1px solid rgba(0,217,255,0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .admin-card h2 { color: #00d9ff; margin-bottom: 1rem; }
+        .user-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .action-btn.approve { background: #00ff88; color: #0f0f23; }
+        .action-btn.reject { background: #ff4444; color: #fff; }
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2rem; }
+            .admin-panel { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="nav-brand">📄 MarkItDown</a>
+        <div>
+            {% if current_user.is_authenticated %}
+                <a href="/">✨ Convert</a>
+                <a href="/history">📋 History</a>
+                {% if current_user.is_admin %}
+                    <a href="/admin">⚙️ Admin</a>
+                {% endif %}
+                <a href="/logout">🚪 Logout ({{ current_user.username }})</a>
+            {% else %}
+                <a href="/login">🔐 Login</a>
+                <a href="/register">📝 Register</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

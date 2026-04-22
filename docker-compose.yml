@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - DATABASE_URL=sqlite:///markitdown.db
+    volumes:
+      - markitdown_data:/app
+      - uploads_data:/tmp/markitdown_uploads
+    restart: unless-stopped
+
+volumes:
+  markitdown_data:
+  uploads_data:

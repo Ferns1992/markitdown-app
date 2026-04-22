@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero">
+    <div class="formats">
+        <span>📕 PDF</span><span>📙 Word</span><span>📘 PowerPoint</span><span>📗 Excel</span>
+        <span>🖼️ Images</span><span>🎵 Audio</span><span>🌐 HTML</span><span>📊 CSV/JSON/XML</span>
+        <span>📚 EPUB</span><span>📦 ZIP</span>
+    </div>
+
+    <div class="upload-area" id="dropZone">
+        <input type="file" id="fileInput" multiple accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.wav,.mp3,.csv,.json,.xml,.html,.epub,.zip,.txt,.md,.msg,.rtf">
+        <div class="upload-icon">⬆️</div>
+        <p>Drag & drop files here, or click to select</p>
+        <br>
+        <button class="btn" onclick="document.getElementById('fileInput').click()">📁 Select Files</button>
+    </div>
+
+    <div id="loading" style="display: none; text-align: center;">
+        <p style="color: #00d9ff;">⏳ Converting... Please wait</p>
+    </div>
+
+    <div id="result">
+        <h3>✅ Conversion Complete</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <span id="filename" style="color: #888;"></span>
+            <div>
+                <button class="btn btn-secondary" onclick="copyMarkdown()">📋 Copy</button>
+                <button class="btn" onclick="downloadMarkdown()">💾 Download .md</button>
+            </div>
+        </div>
+        <pre id="markdownOutput"></pre>
+    </div>
+</div>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const loading = document.getElementById('loading');
+const result = document.getElementById('result');
+const output = document.getElementById('markdownOutput');
+const filename = document.getElementById('filename');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+async function handleFiles(files) {
+    if (files.length === 0) return;
+    const file = files[0];
+    dropZone.style.display = 'none';
+    loading.style.display = 'block';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+
+        if (res.redirected) { window.location.href = '/login'; return; }
+
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            alert('⚠️ Server error. Please login first.');
+            dropZone.style.display = 'block';
+            loading.style.display = 'none';
+            return;
+        }
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            filename.textContent = '📄 ' + data.conversion_id + ' - ' + file.name;
+            output.textContent = data.markdown;
+            result.style.display = 'block';
+        } else {
+            alert('❌ Error: ' + (data.error || 'Unknown error'));
+            dropZone.style.display = 'block';
+        }
+    } catch (e) {
+        alert('❌ Error: ' + e.message);
+        dropZone.style.display = 'block';
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+function copyMarkdown() {
+    navigator.clipboard.writeText(output.textContent);
+    alert('✅ Copied to clipboard!');
+}
+
+function downloadMarkdown() {
+    const blob = new Blob([output.textContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'converted.md';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+</script>
+{% endblock %}

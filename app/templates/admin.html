@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero" style="padding: 2rem 0;">
+    <h1>⚙️ Admin Panel</h1>
+    <div class="admin-panel">
+        <div class="admin-card">
+            <h2>⏳ Pending Approvals</h2>
+            {% for user in pending %}
+            <div class="user-card">
+                <div>
+                    <div style="font-weight: 600;">👤 {{ user.username }}</div>
+                    <div style="font-size: 0.8rem; color: #888;">{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                </div>
+                <div>
+                    <a href="/admin/approve/{{ user.id }}" class="btn action-btn approve">✅ Approve</a>
+                    <a href="/admin/reject/{{ user.id }}" class="btn action-btn reject">❌ Reject</a>
+                </div>
+            </div>
+            {% else %}
+            <p style="color: #888;">No pending users</p>
+            {% endfor %}
+        </div>
+        <div class="admin-card">
+            <h2>👥 All Users</h2>
+            {% for user in users %}
+            <div class="user-card">
+                <div>
+                    <div style="font-weight: 600;">
+                        👤 {{ user.username }}
+                        {% if user.is_admin %} <span style="color: #00d9ff;">[Admin]</span>{% endif %}
+                    </div>
+                    <div style="font-size: 0.8rem; color: #888;">
+                        {% if user.is_approved %}✅ Approved{% else %}⏳ Pending{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
